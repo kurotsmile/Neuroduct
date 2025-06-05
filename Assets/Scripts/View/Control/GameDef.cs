@@ -22,7 +22,7 @@ namespace View.Control
         public float EdgeScaling = 1.0f;
         public float BoardScaling = 1.0f;
         public float BoardPadding = 1.0f;
-        public Vector3 BoardRotation = new Vector3(24f, 12f, 0f);
+        public Vector3 BoardRotation = new(24f, 12f, 0f);
 
         // Board Input
         public float MinSwipeDistanceCm = 0.5f;
@@ -72,6 +72,7 @@ namespace View.Control
         public void OnBtn_Start_Game()
         {
             this.HomePanel.SetActive(false);
+            this.GetComponent<ScrollView>().On_Start_Game();
         }
     }
     

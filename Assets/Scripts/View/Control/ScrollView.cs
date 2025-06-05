@@ -31,42 +31,47 @@ namespace View.Control
 
 		// TODO: make configurable
 		private const float CameraZoomTime = 1f;
-		private readonly Vector3 _scaleRatio = new Vector3(0.9f, 0.5f);
+		private readonly Vector3 _scaleRatio = new(0.9f, 0.5f);
 		private const float VelocityScalingFactor = 50f;
 
 		private int _cameraZoomId;
 
 		public NavigationScript _navigation;
-		private MoveDisplay _moveDisplay;
-		private GameAudio _gameAudio;
+		public MoveDisplay _moveDisplay;
+		public GameAudio _gameAudio;
+		private bool _is_load = false;
 
 		private void Awake()
 		{
-            // Set the maximum number of simultaneous tweens
-            LeanTween.init(30000);
+			// Set the maximum number of simultaneous tweens
+			LeanTween.init(30000);
 
-			_moveDisplay = GameObject.FindGameObjectWithTag("MoveDisplay").GetComponent<MoveDisplay>();
-			_gameAudio = GameObject.FindGameObjectWithTag("GameAudio").GetComponent<GameAudio>();
-			
+
 			// Set the game's strings to their localized versions
 			var language = Levels.CurrentLanguage;
-			if (language.Equals("default")) {
+			if (language.Equals("default"))
+			{
 				return;
 			}
-			
-			try {
-				var map = new Dictionary<string, string> {
+
+			try
+			{
+				var map = new Dictionary<string, string>
+				{
 					["MusicToggleText"] = "music",
 					["SfxToggleText"] = "sfx",
 					["CreditText"] = "credit",
 					["VersionText"] = "version"
 				};
-					
-				foreach(var entry in map) {
+
+				foreach (var entry in map)
+				{
 					var textDisplay = GameObject.FindGameObjectWithTag(entry.Key).GetComponent<Text>();
 					textDisplay.text = Levels.Localization[language][entry.Value];
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				Debug.LogWarning("Failed to apply localization for " + language + "\n" + e);
 			}
 		}
@@ -81,10 +86,19 @@ namespace View.Control
 			var tapRecognizer = new TKTapRecognizer();
 			tapRecognizer.gestureRecognizedEvent += OnTap;
 			TouchKit.addGestureRecognizer(tapRecognizer);
-			
-			// Start with the saved start level
+		}
+
+		public void On_Start_Game()
+		{
+			if (this._is_load)
+			{
+				var puzzleState_cur = _levels[_selectedLevel].GetComponent<PuzzleState>();
+				puzzleState_cur.BoardEnabled = true;
+				return;
+			}
+
+			this._is_load = true;
 			_selectedLevel = Levels.CurrentLevelNum;
-			
 			GenerateLevelsList();
 
 			if (_levels[_selectedLevel] == null) {
@@ -108,18 +122,25 @@ namespace View.Control
 			puzzleState.Init(_selectedLevel);
 		}
 
+		public void On_Pause_Game()
+		{
+			var puzzleState = _levels[_selectedLevel].GetComponent<PuzzleState>();
+			puzzleState.BoardEnabled = false;
+		}
+
 		private void FixedUpdate()
 		{
-			if (!_scrollEnabled) {
+			if (!_scrollEnabled)
+			{
 				return;
 			}
-			
+
 			// TODO: make configurable
 			const float damping = 0.98f;
-			
+
 			transform.Translate(_panVelocity + _magnetVelocity);
 			_panVelocity *= damping;
-			
+
 			var clampedPos = Mathf.Clamp(transform.position.y, _listBottom, _listTop);
 			transform.position = new Vector2(transform.position.x, clampedPos);
 		}
