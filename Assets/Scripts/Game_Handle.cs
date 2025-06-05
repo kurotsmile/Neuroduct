@@ -8,25 +8,37 @@ public class Game_Handle : MonoBehaviour
 {
     [Header("Main Object")]
     public Carrot.Carrot carrot;
-    public GameObject HomePanel;
-    public GameObject PlayPanel;
-
-    [Header("Game Objects")]
+    public IronSourceAds ads;
     public ScrollView view;
     public ButtonScript ObjBtnBackHome;
     public AudioSource audioBkMusic;
 
     [Header("UI")]
     public Text txt_tip_home;
+    public GameObject HomePanel;
+    public GameObject PlayPanel;
 
     void Start()
     {
-        this.carrot.Load_Carrot();
+        this.carrot.Load_Carrot(CheckExitApp);
+        this.ads.On_Load();
+        this.carrot.act_buy_ads_success=this.ads.RemoveAds;
+        this.carrot.game.act_click_watch_ads_in_music_bk=this.ads.ShowRewardedVideo;
+        this.ads.onRewardedSuccess=this.carrot.game.OnRewardedSuccess;
         this.HomePanel.SetActive(true);
         this.PlayPanel.SetActive(false);
         this.ObjBtnBackHome.ButtonPressed += OnBtn_Back_Home;
         this.carrot.game.load_bk_music(this.audioBkMusic);
         this.Update_Ui();
+    }
+
+    private void CheckExitApp()
+    {
+        if (this.PlayPanel.activeInHierarchy)
+        {
+            this.OnBtn_Back_Home(ButtonType.Home);
+            this.carrot.set_no_check_exit_app();
+        }
     }
 
     public void OnBtn_Game_Start()
@@ -46,6 +58,7 @@ public class Game_Handle : MonoBehaviour
             this.PlayPanel.SetActive(false);
             this.view.On_Pause_Game();
             this.Update_Ui();
+            this.ads.show_ads_Interstitial();
         }
     }
 

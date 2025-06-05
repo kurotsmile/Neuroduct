@@ -16,6 +16,7 @@ namespace View.Control
 	public class ScrollView : MonoBehaviour
 	{
 		public GameObject PuzzleGamePrefab;
+		public IronSourceAds ads;
 
 		private bool _scrollEnabled;
 
@@ -345,6 +346,7 @@ namespace View.Control
 			}
 
 			_levels[_selectedLevel].GetComponent<PuzzleState>().RestartLevel();
+			this.ads.show_ads_Interstitial();
 		}
 
 		private void GenerateLevelsList()
@@ -482,6 +484,7 @@ namespace View.Control
 			var next = _levels[_selectedLevel + 1];
 			next.GetComponent<PuzzleState>().DestroyBoard(false);
 			next.GetComponentInChildren<PuzzleInfo>().Hide();
+			this.ads.show_ads_Interstitial();
 		}
 
 		private void OnPan(TKPanRecognizer recognizer)
