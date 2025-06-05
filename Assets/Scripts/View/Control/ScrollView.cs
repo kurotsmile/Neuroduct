@@ -82,7 +82,7 @@ namespace View.Control
 			panRecognizer.gestureRecognizedEvent += OnPan;
 			panRecognizer.gestureCompleteEvent += OnPanComplete;
 			TouchKit.addGestureRecognizer(panRecognizer);
-			
+
 			var tapRecognizer = new TKTapRecognizer();
 			tapRecognizer.gestureRecognizedEvent += OnTap;
 			TouchKit.addGestureRecognizer(tapRecognizer);
@@ -101,26 +101,28 @@ namespace View.Control
 			_selectedLevel = Levels.CurrentLevelNum;
 			GenerateLevelsList();
 
-			if (_levels[_selectedLevel] == null) {
+			if (_levels[_selectedLevel] == null)
+			{
 				Debug.LogError($"Failed to start at level ({_selectedLevel})");
 				return;
 			}
-			
+
 			var puzzleState = _levels[_selectedLevel].GetComponent<PuzzleState>();
 			var puzzleScale = _levels[_selectedLevel].GetComponent<PuzzleScale>();
-			
+
 			puzzleState.BoardEnabled = true;
 			puzzleScale.PuzzleInit += OnPuzzleInit;
 			_levels[_selectedLevel].GetComponent<BoardAction>().PuzzleWin += OnPuzzleWin;
 			puzzleState.LevelStateChanged += OnLevelStateChanged;
-			
+
 			var bounds = _levelBounds[_selectedLevel];
 			var mid = (bounds.Item1 + bounds.Item2) / 2f;
 
 			transform.position = Vector3.up * mid;
-			
+
 			puzzleState.Init(_selectedLevel);
 		}
+
 
 		public void On_Pause_Game()
 		{
@@ -147,34 +149,37 @@ namespace View.Control
 
 		private void Update()
 		{
-			if (!_scrollEnabled) {
+			if (!_scrollEnabled)
+			{
 				return;
 			}
 
 			// Find the nearest level and select it
 			var closestLevel = FindLevel(transform.position.y);
-			
+
 			InterpolateCameraZoom(_selectedLevel);
 			Magnetize(_selectedLevel);
-			
-			if (closestLevel == _selectedLevel) {
+
+			if (closestLevel == _selectedLevel)
+			{
 				return;
 			}
-			
+
 			_selectedLevel = closestLevel;
-			
+
 			RevealLevels(closestLevel);
 		}
 
 		private void InterpolateCameraZoom(int currentLevel)
 		{
-			if (LeanTween.isTweening(_cameraZoomId)) {
+			if (LeanTween.isTweening(_cameraZoomId))
+			{
 				return;
 			}
-			
+
 			var bounds = _levelBounds[currentLevel];
 			var mid = (bounds.Item1 + bounds.Item2) / 2f;
-			
+
 			// Interpolate camera zoom between levels
 			var yPos = transform.position.y;
 			var delta = -mid + yPos;
@@ -184,13 +189,13 @@ namespace View.Control
 			var nextBounds = _levelBounds[closestNextLevel];
 			var nextMid = (nextBounds.Item1 + nextBounds.Item2) / 2f;
 			var deltaRatio = Mathf.Abs(delta) > Mathf.Abs(nextMid - mid) ? 1f : Mathf.Abs(delta) / Mathf.Abs(nextMid - mid);
-			
+
 			var puzzleScale = _levels[_selectedLevel].GetComponent<PuzzleScale>();
 			var selectedLevelZoom = CameraScript.CameraZoomToFit(puzzleScale.Dimensions, puzzleScale.Margin, _scaleRatio);
 
 			var nextPuzzleScale = _levels[closestNextLevel].GetComponent<PuzzleScale>();
 			var nextLevelZoom = CameraScript.CameraZoomToFit(nextPuzzleScale.Dimensions, nextPuzzleScale.Margin, _scaleRatio);
-			
+
 			Camera.main.orthographicSize = LeanTween.easeInOutSine(selectedLevelZoom, nextLevelZoom, deltaRatio);
 		}
 
@@ -199,14 +204,15 @@ namespace View.Control
 			// TODO: make configurable
 			const float velocityThreshold = 0.3f;
 			const float magnetScale = 0.05f;
-			
-			if (_isPanning || _panVelocity.magnitude > velocityThreshold) {
+
+			if (_isPanning || _panVelocity.magnitude > velocityThreshold)
+			{
 				return;
 			}
-			
+
 			var bounds = _levelBounds[currentLevel];
 			var mid = (bounds.Item1 + bounds.Item2) / 2f;
-			
+
 			var delta = -mid + transform.position.y;
 
 			_magnetVelocity = Vector3.down * delta * magnetScale;
@@ -224,51 +230,52 @@ namespace View.Control
 
 			prev.BoardEnabled = false;
 			next.BoardEnabled = false;
-			
+
 			prev.InitSaved();
 			next.InitSaved();
-			
+
 			var currentPuzzleInfo = current.GetComponentInChildren<PuzzleInfo>();
 			var prevPuzzleInfo = prev.GetComponentInChildren<PuzzleInfo>();
 			var nextPuzzleInfo = next.GetComponentInChildren<PuzzleInfo>();
-			
+
 			prevPuzzleInfo.Show();
 			nextPuzzleInfo.Show();
-			
+
 			prevPuzzleInfo.Highlight(false);
 			nextPuzzleInfo.Highlight(false);
 			currentPuzzleInfo.Highlight(true);
-			
+
 			_gameAudio.Play(GameClip.LevelEnable);
 		}
 
 		public void EnableScroll()
 		{
-			if (_scrollEnabled) {
+			if (_scrollEnabled)
+			{
 				DisableScroll();
 				return;
 			}
-			
+
 			_navigation.Hide();
-			
+
 			var puzzleState = _levels[_selectedLevel].GetComponent<PuzzleState>();
 			var puzzleScale = puzzleState.GetComponent<PuzzleScale>();
 			var boardAction = puzzleState.GetComponent<BoardAction>();
-			
+
 			puzzleState.BoardEnabled = false;
-			
+
 			RevealLevels(_selectedLevel);
 
 			puzzleScale.PuzzleInit -= OnPuzzleInit;
 			boardAction.PuzzleWin -= OnPuzzleWin;
 			puzzleState.LevelStateChanged -= OnLevelStateChanged;
-			
+
 			var zoom = CameraScript.CameraZoomToFit(puzzleScale.Dimensions, puzzleScale.Margin, _scaleRatio);
 			_cameraZoomId = CameraScript.ZoomCamera(zoom, CameraZoomTime, LeanTweenType.easeInSine);
 
 			_panVelocity = Vector3.up / VelocityScalingFactor;
 			_scrollEnabled = true;
-			
+
 			// TODO: make configurable
 			const float volume = 0.3f;
 			_gameAudio.Play(GameClip.MenuSelect, volume: volume);
@@ -279,62 +286,64 @@ namespace View.Control
 
 		private void DisableScroll(float delay = 0f)
 		{
-			if (_navigation.IsTweening) {
+			if (_navigation.IsTweening)
+			{
 				return;
 			}
-			
+
 			_scrollEnabled = false;
-			
+
 			var puzzleScale = _levels[_selectedLevel].GetComponent<PuzzleScale>();
 			var puzzleState = _levels[_selectedLevel].GetComponent<PuzzleState>();
-			
+
 			_navigation.Show();
 			_moveDisplay.UpdateText(puzzleState.NumMoves, puzzleState.MovesBestScore, true, true);
-			
+
 			var level = _levels[_selectedLevel];
-			
+
 			level.GetComponentInChildren<PuzzleInfo>().Hide();
-			
+
 			var prevLevel = _levels.ElementAtOrDefault(_selectedLevel - 1);
 			var nextLevel = _levels.ElementAtOrDefault(_selectedLevel + 1);
-			
+
 			prevLevel?.GetComponent<PuzzleState>()?.DestroyBoard(false);
 			nextLevel?.GetComponent<PuzzleState>()?.DestroyBoard(false);
-			
+
 			prevLevel?.GetComponentInChildren<PuzzleInfo>()?.Hide();
 			nextLevel?.GetComponentInChildren<PuzzleInfo>()?.Hide();
-			
+
 			puzzleScale.PuzzleInit += OnPuzzleInit;
 			level.GetComponent<BoardAction>().PuzzleWin += OnPuzzleWin;
 			puzzleState.LevelStateChanged += OnLevelStateChanged;
 			puzzleState.BoardEnabled = true;
 			level.GetComponent<PuzzleView>().ResumeView();
-			
+
 			CameraScript.FitToDimensions(
-				puzzleScale.Dimensions, 
-				puzzleScale.Margin, 
+				puzzleScale.Dimensions,
+				puzzleScale.Margin,
 				CameraZoomTime,
 				LeanTweenType.easeInSine
 			);
-			
+
 			var bounds = _levelBounds[_selectedLevel];
 			var mid = (bounds.Item1 + bounds.Item2) / 2f;
-			
+
 			// TODO: make configurable
 			const float time = 0.5f;
 			LeanTween.moveLocal(gameObject, Vector3.up * mid, time)
 				.setEase(LeanTweenType.easeInOutSine)
 				.setDelay(delay);
-			
+
 			Levels.SaveLevel(puzzleState.LevelState());
 		}
 
 		public void RestartLevel()
 		{
-			if (_scrollEnabled) {
+			if (_scrollEnabled)
+			{
 				return;
 			}
-			
+
 			_levels[_selectedLevel].GetComponent<PuzzleState>().RestartLevel();
 		}
 
@@ -342,20 +351,21 @@ namespace View.Control
 		{
 			_levelBounds = new Tuple<float, float>[Levels.LevelCount];
 			_levels = new GameObject[Levels.LevelCount];
-			
+
 			// TODO: make configurable
 			const float margin = 1.5f;
 
 			_listBottom = margin;
-			
+
 			// Keep track of the last board's position as the offset for the next board
 			var prevOffset = 0f;
 
 			// Generate all levels at the appropriate offsets
-			for (var level = 0; level < Levels.LevelCount; level++) {
+			for (var level = 0; level < Levels.LevelCount; level++)
+			{
 				GenerateLevel(level, margin, ref prevOffset);
 			}
-			
+
 			_listTop = prevOffset - margin;
 		}
 
@@ -370,17 +380,18 @@ namespace View.Control
 
 			var board = Levels.BuildLevel(level);
 
-			if (board == null) {
+			if (board == null)
+			{
 				Debug.LogWarning($"Failed to create level ({level})");
 				return;
 			}
-			
-			var boardSize = (Vector2) board.Size * puzzleScale.Scaling / 2f;;
-			
+
+			var boardSize = (Vector2)board.Size * puzzleScale.Scaling / 2f; ;
+
 			_levels[level] = puzzleGame;
 
 			puzzleGame.GetComponent<PuzzleState>().BoardEnabled = false;
-			
+
 			puzzleGame.GetComponent<BoardInput>().enabled = false;
 
 			var boardHeight = boardSize.y * puzzleScale.Scaling / 2f;
@@ -391,23 +402,24 @@ namespace View.Control
 			// TODO: make configurable
 			const float animationSpeed = 0.4f;
 			const float delayScale = 0f;
-			
+
 			puzzleGame.transform.localPosition += Vector3.down * prevOffset;
 			puzzleGame.GetComponent<PuzzleState>().Save(level, animationSpeed, delayScale);
-			
+
 			// Add half the board height as the starting point for the next board to spawn
 			prevOffset += boardHeight + margin;
 			var boardEndBounds = prevOffset;
-			
+
 			_levelBounds[level] = new Tuple<float, float>(boardStartBounds, boardEndBounds);
 		}
 
 		private void OnPuzzleInit()
 		{
-			if (_scrollEnabled) {
+			if (_scrollEnabled)
+			{
 				return;
 			}
-			
+
 			var puzzleScale = _levels[_selectedLevel].GetComponent<PuzzleScale>();
 			CameraScript.FitToDimensions(puzzleScale.Dimensions, puzzleScale.Margin);
 		}
@@ -415,13 +427,13 @@ namespace View.Control
 		private void OnPuzzleWin(int level)
 		{
 			var puzzleState = _levels[_selectedLevel].GetComponent<PuzzleState>();
-			
+
 			puzzleState.BoardEnabled = false;
 			_levels[_selectedLevel].GetComponent<GameBoardAudio>().enabled = true;
 			_levels[_selectedLevel].GetComponent<PuzzleScale>().PuzzleInit -= OnPuzzleInit;
 			_levels[_selectedLevel].GetComponent<BoardAction>().PuzzleWin -= OnPuzzleWin;
 			puzzleState.LevelStateChanged -= OnLevelStateChanged;
-			
+
 			// Unity Analytics
 			Analytics.CustomEvent("nodulus.level.complete", new Dictionary<string, object> {
 				{ "level.name", puzzleState.Metadata.Name },
@@ -430,41 +442,43 @@ namespace View.Control
 				{ "level.timeElapsed", puzzleState.TimeElapsed },
 				{ "level.winCount", puzzleState.Metadata.WinCount }
 			});
-			
+
 			_selectedLevel = level >= _levels.Length - 1 ? _levels.Length - 1 : level + 1;
-			
+
 			puzzleState = _levels[_selectedLevel].GetComponent<PuzzleState>();
-			
+
 			_levels[_selectedLevel].GetComponent<PuzzleState>().BoardEnabled = false;
 			_levels[_selectedLevel].GetComponent<PuzzleScale>().PuzzleInit += OnPuzzleInit;
 			_levels[_selectedLevel].GetComponent<BoardAction>().PuzzleWin += OnPuzzleWin;
 			_levels[_selectedLevel].GetComponent<PuzzleState>().LevelStateChanged += OnLevelStateChanged;
-			
+
 			// Move to the new board
 			var bounds = _levelBounds[_selectedLevel];
 			var mid = (bounds.Item1 + bounds.Item2) / 2f;
-			
+
 			// TODO: make configurable
 			const float time = 0.5f;
 			const float moveDelay = 1f;
 			LeanTween.moveLocal(gameObject, Vector3.up * mid, time)
 				.setEase(LeanTweenType.easeInOutSine)
 				.setDelay(moveDelay);
-			
+
 			// Initialize the new board
 			// TODO: make configurable
 			const float initDelay = 0.5f;
-			LeanTween.delayedCall(initDelay, () => {
+			LeanTween.delayedCall(initDelay, () =>
+			{
 				puzzleState.GetComponent<PuzzleState>().BoardEnabled = true;
 				puzzleState.Init(_selectedLevel);
-				
+
 				_levels[_selectedLevel].GetComponent<PuzzleView>().ResumeView();
 			});
 
-			if (_selectedLevel >= _levels.Length - 1) {
+			if (_selectedLevel >= _levels.Length - 1)
+			{
 				return;
 			}
-			
+
 			var next = _levels[_selectedLevel + 1];
 			next.GetComponent<PuzzleState>().DestroyBoard(false);
 			next.GetComponentInChildren<PuzzleInfo>().Hide();
@@ -472,7 +486,8 @@ namespace View.Control
 
 		private void OnPan(TKPanRecognizer recognizer)
 		{
-			if (!_scrollEnabled) {
+			if (!_scrollEnabled)
+			{
 				return;
 			}
 
@@ -480,27 +495,28 @@ namespace View.Control
 
 			_panVelocity = Vector2.zero;
 			_magnetVelocity = Vector2.zero;
-			
+
 			// TODO: make configurable
 			const float scalingFactor = 100f;
 			transform.Translate(Vector3.up * recognizer.deltaTranslation.y / scalingFactor);
-			
+
 			var clampedPos = Mathf.Clamp(transform.position.y, _listBottom, _listTop);
 			transform.position = new Vector2(transform.position.x, clampedPos);
 		}
 
 		private void OnPanComplete(TKPanRecognizer recognizer)
 		{
-			if (!_scrollEnabled) {
+			if (!_scrollEnabled)
+			{
 				return;
 			}
 
 			_isPanning = false;
-			
+
 			// TODO: make configurable
 			var delta = recognizer.deltaTranslation.y;
 			var velocityMagnitude = Mathf.Abs(delta) < 5f ? 0f : Mathf.Clamp(delta, -50f, 50f);
-			
+
 			_panVelocity = Vector3.up * velocityMagnitude / VelocityScalingFactor;
 		}
 
@@ -513,21 +529,28 @@ namespace View.Control
 		{
 			// TODO: this is linear search, can be binary search
 			var bounds = _levelBounds[_selectedLevel];
-			if (yPos < bounds.Item1) {
-				for (var level = _selectedLevel - 1; level >= 0; level--) {
+			if (yPos < bounds.Item1)
+			{
+				for (var level = _selectedLevel - 1; level >= 0; level--)
+				{
 					bounds = _levelBounds[level];
-					if (yPos <= bounds.Item2) {
+					if (yPos <= bounds.Item2)
+					{
 						return level;
 					}
 				}
-			} else if (yPos > bounds.Item2) {
-				for (var level = _selectedLevel + 1; level < Levels.LevelCount; level++) {
+			}
+			else if (yPos > bounds.Item2)
+			{
+				for (var level = _selectedLevel + 1; level < Levels.LevelCount; level++)
+				{
 					bounds = _levelBounds[level];
-					if (yPos >= bounds.Item1) {
+					if (yPos >= bounds.Item1)
+					{
 						return level;
 					}
 				}
-				
+
 			}
 
 			return _selectedLevel;
@@ -535,30 +558,33 @@ namespace View.Control
 
 		private void OnTap(TKTapRecognizer recognizer)
 		{
-			if (!_scrollEnabled) {
+			if (!_scrollEnabled)
+			{
 				return;
 			}
 
-			var touch = (Vector2) Camera.main.ScreenToViewportPoint(recognizer.touchLocation()) - Vector2.one / 2f;
+			var touch = (Vector2)Camera.main.ScreenToViewportPoint(recognizer.touchLocation()) - Vector2.one / 2f;
 			// TODO: make configurable
 			const float maxTouchDistance = 0.4f;
-			
-			if (touch.magnitude > maxTouchDistance) {
+
+			if (touch.magnitude > maxTouchDistance)
+			{
 				return;
 			}
 
 			var velocity = (_panVelocity + _magnetVelocity).magnitude;
-			
+
 			// TODO: make configurable
 			const float threshold = 0.20f;
-			
-			if (velocity > threshold) {
+
+			if (velocity > threshold)
+			{
 				return;
 			}
-			
+
 			EnableScroll();
 		}
-		
+
 		public void ToggleSettings()
 		{
 			_navigation.ToggleSettings();
@@ -577,6 +603,11 @@ namespace View.Control
 		public void ToggleFreeze()
 		{
 			_scrollEnabled = !_scrollEnabled;
+		}
+
+		public int GetLevelCur()
+		{
+			return _selectedLevel;
 		}
 	}
 }

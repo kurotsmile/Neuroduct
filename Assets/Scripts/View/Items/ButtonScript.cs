@@ -86,6 +86,7 @@ namespace View.Items
         Settings,
         MusicToggle,
         SfxToggle,
-        Home
+        Home,
+        Help,
     }
 }

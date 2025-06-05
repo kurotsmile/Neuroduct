@@ -1,4 +1,6 @@
+using Core.Game;
 using UnityEngine;
+using UnityEngine.UI;
 using View.Control;
 using View.Items;
 
@@ -14,6 +16,9 @@ public class Game_Handle : MonoBehaviour
     public ButtonScript ObjBtnBackHome;
     public AudioSource audioBkMusic;
 
+    [Header("UI")]
+    public Text txt_tip_home;
+
     void Start()
     {
         this.carrot.Load_Carrot();
@@ -21,6 +26,7 @@ public class Game_Handle : MonoBehaviour
         this.PlayPanel.SetActive(false);
         this.ObjBtnBackHome.ButtonPressed += OnBtn_Back_Home;
         this.carrot.game.load_bk_music(this.audioBkMusic);
+        this.Update_Ui();
     }
 
     public void OnBtn_Game_Start()
@@ -39,6 +45,7 @@ public class Game_Handle : MonoBehaviour
             this.HomePanel.SetActive(true);
             this.PlayPanel.SetActive(false);
             this.view.On_Pause_Game();
+            this.Update_Ui();
         }
     }
 
@@ -60,5 +67,30 @@ public class Game_Handle : MonoBehaviour
     public void OnBtn_Rate()
     {
         this.carrot.show_rate();
+    }
+
+    public void OnBtn_Other_App()
+    {
+        this.carrot.show_list_carrot_app();
+    }
+
+    public void OnBtn_ShowListLevel()
+    {
+        this.view._navigation.OnShowHelp();
+    }
+
+    private void Update_Ui()
+    {
+        this.txt_tip_home.text = "You are playing level " + this.view.GetLevelCur() + "/" + Levels.LevelCount + " of the level";
+    }
+
+    public void OnBtn_BK_music()
+    {
+        this.carrot.game.show_list_music_game();
+    }
+
+    public void OnRemoveAds()
+    {
+        this.carrot.buy_inapp_removeads();
     }
 }

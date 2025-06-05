@@ -11,6 +11,7 @@ namespace View.Control
     /// </summary>
     public class NavigationScript : MonoBehaviour
     {
+        public Game_Handle g;
         private ScrollView _scrollView;
 
         private Transform _moveDisplay;
@@ -21,11 +22,11 @@ namespace View.Control
         private Vector3 _moveDisplayStart;
         private Vector3 _scrollHelperStart;
         private Vector3 _buttonSelectStart;
-        
+
         private readonly Vector3 _moveDisplayEnd = new Vector3(-4f, 1.5f, 0f);
         private readonly Vector3 _buttonSelectEnd = new Vector3(3f, 1.5f, 0f);
         private readonly Vector3 _scrollHelperEnd = new Vector3(5f, 0f, 0f);
-        
+
         // TODO: make configurable
         private const float TransitionTime = 1f;
         private const float TransitionDelay = 0.2f;
@@ -35,7 +36,7 @@ namespace View.Control
         private Vector3 _mainViewStart;
         private Vector3 _settingsStart;
 
-        private readonly IDictionary<ButtonType, Action<ScrollView>> _buttonActions = 
+        private readonly IDictionary<ButtonType, Action<ScrollView>> _buttonActions =
                 new Dictionary<ButtonType, Action<ScrollView>> {
             { ButtonType.LevelSelect, scrollView => scrollView.EnableScroll() },
             { ButtonType.RestartLevel, scrollView => scrollView.RestartLevel() },
@@ -43,6 +44,7 @@ namespace View.Control
             { ButtonType.MusicToggle, scrollView => scrollView.ToggleMusic() },
             { ButtonType.SfxToggle, scrollView => scrollView.ToggleSfx() },
             { ButtonType.Home, scrollView => scrollView.ToggleSfx() },
+            { ButtonType.Help, scrollView => scrollView._navigation.OnShowHelp() }
         };
 
         public bool IsTweening => _buttonSelect.IsTweening;
@@ -59,7 +61,8 @@ namespace View.Control
             var buttons = GameObject.FindGameObjectsWithTag("Button")
                 .Select(obj => obj.GetComponent<ButtonScript>());
 
-            foreach (var button in buttons) {
+            foreach (var button in buttons)
+            {
                 button.ButtonPressed += buttonState => _buttonActions[buttonState](_scrollView);
             }
         }
@@ -71,11 +74,11 @@ namespace View.Control
             _buttonSelectStart = _buttonSelect.transform.localPosition;
             _mainViewStart = _scrollView.transform.localPosition;
             _settingsStart = _settings.transform.localPosition;
-            
+
             _moveDisplay.Translate(_moveDisplayEnd);
             _scrollHelper.Translate(_scrollHelperEnd);
             _buttonSelect.transform.Translate(_buttonSelectEnd);
-            
+
             Show();
         }
 
@@ -84,15 +87,15 @@ namespace View.Control
             LeanTween.moveLocal(_moveDisplay.gameObject, _moveDisplayStart, TransitionTime)
                 .setDelay(TransitionDelay)
                 .setEase(LeanTweenType.easeOutSine);
-            
+
             LeanTween.moveLocal(_scrollHelper.gameObject, _scrollHelperStart + _scrollHelperEnd, TransitionTime)
                 .setDelay(TransitionDelay)
                 .setEase(LeanTweenType.easeOutSine);
-            
+
             LeanTween.moveLocal(_buttonSelect.gameObject, _buttonSelectStart, TransitionTime)
                 .setDelay(TransitionDelay)
                 .setEase(LeanTweenType.easeOutSine);
-            
+
             _buttonSelect.ShowLevelButtons();
         }
 
@@ -101,17 +104,23 @@ namespace View.Control
             LeanTween.moveLocal(_moveDisplay.gameObject, _moveDisplayStart + _moveDisplayEnd, TransitionTime)
                 .setDelay(TransitionDelay)
                 .setEase(LeanTweenType.easeOutSine);
-            
+
             LeanTween.moveLocal(_scrollHelper.gameObject, _scrollHelperStart, TransitionTime)
                 .setDelay(TransitionDelay)
                 .setEase(LeanTweenType.easeOutSine);
-            
+
             _buttonSelect.ShowSettingsButtons();
         }
 
         public void ToggleSettings()
         {
-            if (LeanTween.isTweening(_settingsTweenId)) {
+            this.g.OnBtn_Game_Setting();
+        }
+
+        public void OnShowHelp()
+        {
+            if (LeanTween.isTweening(_settingsTweenId))
+            {
                 return;
             }
             
@@ -119,7 +128,6 @@ namespace View.Control
             var settingsDisplacement = _showSettings ? 0f : _settingsStart.x;
             var scrollDisplacement = _showSettings ? -40f : _mainViewStart.x;
             
-            // TODO: make configurable
             const float time = 0.4f;
             _settingsTweenId = LeanTween.moveLocalX(_scrollView.gameObject, scrollDisplacement, time)
                 .setEase(LeanTweenType.easeInOutSine)
