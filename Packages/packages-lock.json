@@ -16,7 +16,7 @@
       }
     },
     "com.unity.analytics": {
-      "version": "3.8.1",
+      "version": "3.8.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -26,7 +26,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.collab-proxy": {
-      "version": "2.7.1",
+      "version": "2.11.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -39,16 +39,25 @@
       "dependencies": {}
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.23",
+      "version": "2.0.27",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.9"
+        "com.unity.test-framework": "1.1.33"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.inputsystem": {
+      "version": "1.19.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.uielements": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.multiplayer.center": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
@@ -56,19 +65,19 @@
       }
     },
     "com.unity.nuget.newtonsoft-json": {
-      "version": "3.2.1",
+      "version": "3.2.2",
       "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.purchasing": {
-      "version": "4.12.2",
+      "version": "5.2.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
-        "com.unity.services.core": "1.12.5",
+        "com.unity.services.core": "1.14.0",
         "com.unity.modules.androidjni": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0"
@@ -76,18 +85,18 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.analytics": {
-      "version": "6.0.3",
+      "version": "6.3.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
-        "com.unity.services.core": "1.12.4",
+        "com.unity.services.core": "1.16.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.services.core": {
-      "version": "1.14.0",
+      "version": "1.16.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -98,32 +107,16 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.levelplay": {
-      "version": "8.8.1",
+      "version": "9.4.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.services.core": "1.8.1"
-      },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.sysroot": {
-      "version": "2.0.10",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.sysroot.linux-x86_64": {
-      "version": "2.0.9",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.sysroot": "2.0.10"
+        "com.unity.services.core": "1.15.1"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.5.1",
+      "version": "1.6.0",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
@@ -131,16 +124,6 @@
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       }
-    },
-    "com.unity.toolchain.win-x86_64-linux-x86_64": {
-      "version": "2.0.10",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.sysroot": "2.0.10",
-        "com.unity.sysroot.linux-x86_64": "2.0.9"
-      },
-      "url": "https://packages.unity.com"
     },
     "com.unity.ugui": {
       "version": "2.0.0",
@@ -152,11 +135,10 @@
       }
     },
     "com.unity.xr.legacyinputhelpers": {
-      "version": "2.1.12",
+      "version": "3.0.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.modules.vr": "1.0.0",
         "com.unity.modules.xr": "1.0.0"
       },
       "url": "https://packages.unity.com"
@@ -166,6 +148,14 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {}
+    },
+    "com.unity.modules.adaptiveperformance": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.subsystems": "1.0.0"
+      }
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
@@ -309,7 +299,8 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.modules.hierarchycore": "1.0.0"
+        "com.unity.modules.hierarchycore": "1.0.0",
+        "com.unity.modules.physics": "1.0.0"
       }
     },
     "com.unity.modules.umbra": {
@@ -371,6 +362,16 @@
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.assetbundle": "1.0.0",
         "com.unity.modules.imageconversion": "1.0.0"
+      }
+    },
+    "com.unity.modules.vectorgraphics": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {
+        "com.unity.modules.uielements": "1.0.0",
+        "com.unity.modules.imageconversion": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0"
       }
     },
     "com.unity.modules.vehicles": {

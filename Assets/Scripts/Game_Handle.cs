@@ -22,9 +22,13 @@ public class Game_Handle : MonoBehaviour
     {
         this.carrot.Load_Carrot(CheckExitApp);
         this.ads.On_Load();
-        this.carrot.act_buy_ads_success=this.ads.RemoveAds;
-        this.carrot.game.act_click_watch_ads_in_music_bk=this.ads.ShowRewardedVideo;
-        this.ads.onRewardedSuccess=this.carrot.game.OnRewardedSuccess;
+        if (this.view != null && this.view.ads == null)
+        {
+            this.view.ads = this.ads;
+        }
+        this.carrot.act_buy_ads_success = this.ads.RemoveAds;
+        this.carrot.game.act_click_watch_ads_in_music_bk = this.ads.ShowRewardedVideo;
+        this.ads.onRewardedSuccess = this.carrot.game.OnRewardedSuccess;
         this.HomePanel.SetActive(true);
         this.PlayPanel.SetActive(false);
         this.ObjBtnBackHome.ButtonPressed += OnBtn_Back_Home;

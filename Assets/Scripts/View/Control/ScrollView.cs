@@ -42,6 +42,33 @@ namespace View.Control
 		public GameAudio _gameAudio;
 		private bool _is_load = false;
 
+		private bool EnsureAdsReference()
+		{
+			if (ads != null)
+			{
+				return true;
+			}
+
+			ads = FindObjectOfType<IronSourceAds>();
+			if (ads != null)
+			{
+				return true;
+			}
+
+			Debug.LogWarning("ScrollView could not find an IronSourceAds instance. Interstitial ads will be skipped.");
+			return false;
+		}
+
+		private void ShowInterstitialAd()
+		{
+			if (!EnsureAdsReference())
+			{
+				return;
+			}
+
+			ads.show_ads_Interstitial();
+		}
+
 		private void Awake()
 		{
 			// Set the maximum number of simultaneous tweens
@@ -346,7 +373,7 @@ namespace View.Control
 			}
 
 			_levels[_selectedLevel].GetComponent<PuzzleState>().RestartLevel();
-			this.ads.show_ads_Interstitial();
+			ShowInterstitialAd();
 		}
 
 		private void GenerateLevelsList()
@@ -484,7 +511,7 @@ namespace View.Control
 			var next = _levels[_selectedLevel + 1];
 			next.GetComponent<PuzzleState>().DestroyBoard(false);
 			next.GetComponentInChildren<PuzzleInfo>().Hide();
-			this.ads.show_ads_Interstitial();
+			ShowInterstitialAd();
 		}
 
 		private void OnPan(TKPanRecognizer recognizer)
